@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path_drawing/path_drawing.dart';
 
 class CustomerPainter extends CustomPainter {
   double animFraction;
@@ -39,6 +40,8 @@ class CustomerPainter extends CustomPainter {
       60
     ]);
     _drawBottomBackground(canvas, size);
+
+    _drawDashLineFromPoints(Offset(0, size.height / 7 * 6), Offset(100, size.height / 7 * 4), canvas);
   }
 
   _drawDashRow(Canvas canvas, Size size, double dy) {
@@ -97,14 +100,30 @@ class CustomerPainter extends CustomPainter {
   }
 
   _drawDashLineFromPoints(Offset start, Offset end, Canvas canvas) {
-    // double dashWidth = 4, dashSpace = 3, startX = start.dx;
-    // final paint = Paint()
-    //   ..color = Color(0xffcccccc).withOpacity(0.3)
-    //   ..strokeWidth = 1;
-    // while (startX < end.dx) {
-    //   canvas.drawLine(Offset(startX, dy), Offset(startX + dashWidth, dy), paint);
-    //   startX += dashWidth + dashSpace;
-    // }
+    print('_drawDashLineFromPoints ====$start -----$end');
+    final paint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.fill
+      ..shader = LinearGradient(
+        begin: Alignment.bottomCenter,
+        end: Alignment.topCenter,
+        colors: [
+          const Color(0x4bdef3ff),
+          const Color(0xa96fc3f7),
+        ],
+      ).createShader(Rect.fromPoints(
+        Offset(start.dx, start.dy),
+        Offset(end.dx, end.dy),
+      ))
+      ..strokeWidth = 2;
+    final path = Path();
+    path.moveTo(start.dx, start.dy);
+    path.lineTo(end.dx, end.dy);
+    path.lineTo(end.dx + 20 , end.dy + 20);
+    path.lineTo(start.dx, start.dy);
+    // path.addPolygon(points, close)
+    // canvas.drawPath(dashPath(path, dashArray: CircularIntervalList<double>(<double>[10, 5])), paint);
+    canvas.drawPath(path, paint);
   }
 
   @override
