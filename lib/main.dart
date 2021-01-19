@@ -1,9 +1,17 @@
 import 'dart:io';
+import 'dart:math' as math;
 import 'dart:math';
 
+import 'package:chart/DemandLayout.dart';
 import 'package:chart/pie_chart.dart';
+import 'package:chart/real_estate_chart_layout.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import 'RealEstateDashBoardInfo.dart';
+import 'WorkBarChar.dart';
+import 'customer/CustomerLayout.dart';
 
 void enablePlatformOverrideForDesktop() {
   if (!kIsWeb && (Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
@@ -83,132 +91,109 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        body: Container(
-          margin: EdgeInsets.all(16),
-          padding: EdgeInsets.all(12),
-          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), boxShadow: [BoxShadow(color: const Color(0x33000000), offset: Offset(1, 1), blurRadius: 7, spreadRadius: 0)], color: const Color(0xffffffff)),
+        body: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Công việc - T9/2020", style: const TextStyle(color: const Color(0xff326fe3), fontWeight: FontWeight.w600, fontFamily: "SFProText", fontStyle: FontStyle.normal, fontSize: 16.0)),
-                  Text("Xem chi tiết",
-                      style: const TextStyle(
-                        color: const Color(0xff196dff),
-                        fontWeight: FontWeight.w400,
-                        fontFamily: "SFProText",
-                        fontStyle: FontStyle.normal,
-                        fontSize: 12.0,
-                        decoration: TextDecoration.underline,
-                      ))
-                ],
+              Container(
+                margin: EdgeInsets.all(16),
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), boxShadow: [BoxShadow(color: const Color(0x33000000), offset: Offset(1, 1), blurRadius: 7, spreadRadius: 0)], color: const Color(0xffffffff)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Công việc - T9/2020", style: const TextStyle(color: const Color(0xff326fe3), fontWeight: FontWeight.w600, fontFamily: "SFProText", fontStyle: FontStyle.normal, fontSize: 16.0)),
+                        Text("Xem chi tiết",
+                            style: const TextStyle(
+                              color: const Color(0xff196dff),
+                              fontWeight: FontWeight.w400,
+                              fontFamily: "SFProText",
+                              fontStyle: FontStyle.normal,
+                              fontSize: 12.0,
+                              decoration: TextDecoration.underline,
+                            ))
+                      ],
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                            flex: 3,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [WorkBarChar(key: ValueKey(key))],
+                            )),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Container(child: chart),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(
-                height: 12,
+              CustomerLayout(key: ValueKey(key + 30000),),
+              Container(
+                margin: EdgeInsets.all(16),
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), boxShadow: [BoxShadow(color: const Color(0x33000000), offset: Offset(1, 1), blurRadius: 7, spreadRadius: 0)], color: const Color(0xffffffff)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Quỹ hàng - T9/2020", style: const TextStyle(color: const Color(0xff326fe3), fontWeight: FontWeight.w600, fontFamily: "SFProText", fontStyle: FontStyle.normal, fontSize: 16.0)),
+                        Text("Xem chi tiết",
+                            style: const TextStyle(
+                              color: const Color(0xff196dff),
+                              fontWeight: FontWeight.w400,
+                              fontFamily: "SFProText",
+                              fontStyle: FontStyle.normal,
+                              fontSize: 12.0,
+                              decoration: TextDecoration.underline,
+                            ))
+                      ],
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                            flex: 3,
+                            child: RealEstateDashBoardInfo(
+                              key: ValueKey(key),
+                            )),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Container(
+                            child: AspectRatio(
+                              aspectRatio: 1,
+                              child: RealEstateChartLayout(
+                                key: ValueKey(key),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 3,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [WorkBarChar(key: ValueKey(key))],
-                      )),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Container(child: chart),
-                ],
-              ),
+              DemandLayout(key: ValueKey(key),),
+
             ],
           ),
         ));
-  }
-}
-
-class WorkBarChar extends StatefulWidget {
-  const WorkBarChar({Key key}) : super(key: key);
-
-  @override
-  _WorkBarCharState createState() => _WorkBarCharState();
-}
-
-class _WorkBarCharState extends State<WorkBarChar> with SingleTickerProviderStateMixin {
-  Animation<double> animation;
-  AnimationController controller;
-  double _animFraction = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = AnimationController(
-      duration: Duration(milliseconds: 1200),
-      vsync: this,
-    );
-    final Animation curve = CurvedAnimation(
-      parent: controller,
-      curve: Curves.decelerate,
-    );
-    animation = Tween<double>(begin: 0, end: 1).animate(curve)
-      ..addListener(() {
-        setState(() {
-          _animFraction = animation.value;
-        });
-      });
-    controller.forward();
-  }
-
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          height: 40,
-          child: CustomPaint(
-            painter: ProgressBarPainter(Color(0xfff25c23), 0.3, title: 'Quá hạn', value: 05, animFraction: _animFraction),
-            child: Container(),
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-          height: 40,
-          child: CustomPaint(
-            painter: ProgressBarPainter(Color(0xfff8c41c), 0.6, title: 'Chưa xử lý', value: 20, animFraction: _animFraction),
-            child: Container(),
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-          height: 40,
-          child: CustomPaint(
-            painter: ProgressBarPainter(Color(0xff1e9ded), 0.3, title: 'Đang xử lý', value: 15, animFraction: _animFraction),
-            child: Container(),
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-          height: 40,
-          child: CustomPaint(
-            painter: ProgressBarPainter(Color(0xff64c43b), 0.4, title: 'Hoàn thành', value: 70, animFraction: _animFraction),
-            child: Container(),
-          ),
-        ),
-      ],
-    );
   }
 }
 
@@ -220,12 +205,12 @@ class ProgressBarPainter extends CustomPainter {
   final int value;
 
   ProgressBarPainter(
-      this.color,
-      this.percent, {
-        @required this.title,
-        @required this.value,
-        this.animFraction,
-      });
+    this.color,
+    this.percent, {
+    @required this.title,
+    @required this.value,
+    this.animFraction,
+  });
 
   @override
   bool shouldRepaint(CustomPainter painter) {
@@ -234,7 +219,7 @@ class ProgressBarPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final height = 10;
+    final height = 8;
     final lineRadius = Radius.circular(1);
     canvas.drawRRect(
       RRect.fromRectAndRadius(
@@ -259,7 +244,7 @@ class ProgressBarPainter extends CustomPainter {
       ),
       Paint()..color = color,
     );
-    final fontSize = size.width / 16;
+    final fontSize = size.width / 14;
     _drawName(canvas, title, Point(0.0, 0.0), fontSize: fontSize);
     _drawName(canvas, '${(value * animFraction).toStringAsFixed(0)}', Point(size.width, 0.0), rightPosition: true, fontSize: fontSize);
   }
