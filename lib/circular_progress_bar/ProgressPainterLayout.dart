@@ -16,7 +16,7 @@ class _ProgressLayoutState extends State<ProgressLayout> with SingleTickerProvid
   Tween<double> _tween;
   AnimationController controller;
   double percent = 0.4;
-  double end = 0;
+  double end = 0.3;
   double begin = 0;
 
   void increase(value) {
@@ -42,14 +42,14 @@ class _ProgressLayoutState extends State<ProgressLayout> with SingleTickerProvid
   void initState() {
     super.initState();
     controller = AnimationController(
-      duration: Duration(milliseconds: 1000),
+      duration: Duration(milliseconds: 800),
       vsync: this,
     );
     final Animation curve = CurvedAnimation(
       parent: controller,
       curve: Curves.fastOutSlowIn,
     );
-    _tween = Tween<double>(begin: 0, end: 1);
+    _tween = Tween<double>(begin: 0, end: 1 / 3);
     animation = _tween.animate(curve)
       ..addListener(() {
         setState(() {
