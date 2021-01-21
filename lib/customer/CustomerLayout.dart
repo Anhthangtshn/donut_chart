@@ -4,39 +4,83 @@ import 'package:flutter/widgets.dart';
 import 'CustomerPainter.dart';
 
 class CustomerLayout extends StatefulWidget {
-  CustomerLayout({Key key,}) : super(key: key);
+  CustomerLayout({
+    Key key,
+  }) : super(key: key);
+
   @override
   _CustomerLayoutState createState() => _CustomerLayoutState();
 }
 
-class _CustomerLayoutState extends State<CustomerLayout> with SingleTickerProviderStateMixin {
-  Animation<double> animation;
-  AnimationController controller;
-  double _animFraction = 0.0;
+class _CustomerLayoutState extends State<CustomerLayout> with TickerProviderStateMixin {
+  AnimationController pulseController;
+  Animation<double> polygonAnimation;
+  AnimationController polygonController;
+  double polygonValue = 0.0;
+
+  Animation<double> dashAnimation;
+  AnimationController dashController;
+  double dashAnimateValue = 0.0;
 
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(
+    polygonController = AnimationController(
       duration: Duration(milliseconds: 1200),
       vsync: this,
     );
     final Animation curve = CurvedAnimation(
-      parent: controller,
+      parent: polygonController,
       curve: Curves.ease,
     );
-    animation = Tween<double>(begin: 0, end: 1).animate(curve)
+    polygonAnimation = Tween<double>(begin: 0, end: 1).animate(curve)
       ..addListener(() {
         setState(() {
-          _animFraction = animation.value;
+          polygonValue = polygonAnimation.value;
         });
       });
-    controller.forward();
+    polygonController.forward();
+
+    polygonController.addStatusListener((status) {
+      if(status == AnimationStatus.completed) {
+        print('polygonController =======$polygonController');
+        dashController.forward();
+      }
+    });
+
+    pulseController = new AnimationController(
+      vsync: this,
+    );
+    _startAnimation();
+
+    dashController = AnimationController(
+      duration: Duration(milliseconds: 1200),
+      vsync: this,
+    );
+    final Animation dashCurve = CurvedAnimation(
+      parent: dashController,
+      curve: Curves.ease,
+    );
+    dashAnimation = Tween<double>(begin: 0, end: 1).animate(dashCurve)
+      ..addListener(() {
+        setState(() {
+          dashAnimateValue = dashAnimation.value;
+        });
+      });
+  }
+
+  void _startAnimation() {
+    pulseController.stop();
+    pulseController.reset();
+    pulseController.repeat(
+      period: Duration(milliseconds: 800),
+    );
   }
 
   @override
   void dispose() {
-    controller?.dispose();
+    pulseController?.dispose();
+    polygonController?.dispose();
     super.dispose();
   }
 
@@ -74,7 +118,7 @@ class _CustomerLayoutState extends State<CustomerLayout> with SingleTickerProvid
             child: Container(
               width: double.infinity,
               child: CustomPaint(
-                painter: CustomerPainter(_animFraction),
+                painter: CustomerPainter(polygonValue,dashAnimateValue, animation: pulseController),
               ),
             ),
           )

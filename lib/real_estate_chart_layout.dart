@@ -34,16 +34,17 @@ class _RealEstateChartLayoutState extends State<RealEstateChartLayout> with Sing
     controller.forward();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(16),
       child: CustomPaint(
         child: SizedBox(),
         painter: RealEstateChart(
           _animFraction,
           values: [10, 30, 50, 100,60],
-          gradientColors: [GradientColor(Color(0xffd1d1d1), Color(0xffe3e3e3)),GradientColor(Color(0xffffa920), Color(0xffec4a00)), GradientColor(Color(0xff9de46d), Color(0xff64c43b)), GradientColor(Color(0xffffe42a), Color(0xfff6bd00)), GradientColor(Color(0xff3fd2ff), Color(0xff0a94ec))],
+          gradientColors: [GradientColor(Color(0xffd1d1d1), Color(0xffe3e3e3)),GradientColor(Color(0xff9de46d), Color(0xff64c43b)),GradientColor(Color(0xffffe42a), Color(0xfff6bd00)),GradientColor(Color(0xff3fd2ff), Color(0xff0a94ec)),GradientColor(Color(0xffffa920), Color(0xffec4a00)),  ],
         ),
       ),
     );

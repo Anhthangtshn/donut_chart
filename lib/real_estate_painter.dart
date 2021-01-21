@@ -18,6 +18,7 @@ class RealEstateChart extends CustomPainter {
   final double strokeWidth;
   double _prevAngle = 270 / 360 * 2 * math.pi;
   double _animationValue;
+  List<GradientColor> gradientColors;
 
   RealEstateChart(
     double animationValue, {
@@ -27,34 +28,58 @@ class RealEstateChart extends CustomPainter {
   }) {
     _animationValue = animationValue;
     _total = values.fold(0, (v1, v2) => v1 + v2);
+    this.gradientColors = gradientColors;
     for (int i = 0; i < values.length; i++) {
-      Color firstColor = gradientColors[i].start;
-      Color secondColor = gradientColors[i].end;
-      final paint = new Paint()
-        ..shader = RadialGradient(
-          colors: [firstColor, secondColor],
-        ).createShader(Rect.fromCircle(
-          center: Offset(0, 0),
-          radius: 100,
-        ));
-      paint.style = PaintingStyle.fill;
+      final paint = new Paint();
       _paintList.add(paint);
     }
     _values = values;
   }
 
+  List<double> angles = [];
+  List<double> listRadius = [];
+
   @override
   void paint(Canvas canvas, Size size) {
+    List<double> percentHeight = [1, 94 / 80, 84 / 80, 94 / 80, 88 / 80];
+    _prevAngle = 1.5 * math.pi;
+    angles.clear();
+    listRadius.clear();
     for (int i = 0; i < _values.length; i++) {
       final eachSectionAngle = _values[i] / _total * 2 * math.pi;
+      final radius = size.width / 2 * percentHeight[i];
+      listRadius.add(radius);
       canvas.drawArc(
-        Rect.fromCircle(center: Offset(size.width / 2, size.height / 2), radius: size.width / 2 + ((i % 2 == 0) ? 4 : -4)),
+        Rect.fromCircle(center: Offset(size.width / 2, size.height / 2), radius: radius),
         _prevAngle,
         eachSectionAngle * _animationValue,
         true,
-        _paintList[i]..strokeWidth = i * 20.0 * _animationValue,
+        _paintList[i]
+          ..shader = RadialGradient(
+            colors: [gradientColors[i].start, gradientColors[i].end],
+          ).createShader(Rect.fromCircle(
+            center: Offset(size.width / 2, size.height / 2),
+            radius: size.width / 2,
+          )),
       );
+      angles.add(_prevAngle);
       _prevAngle += eachSectionAngle;
+    }
+
+    for (int i = 0; i < angles.length; i++) {
+      final angle = 0.5 * math.pi - (angles[i] - 1.5 * math.pi);
+      final x = size.width / 2;
+      final y = size.width / 2;
+      final radius = listRadius[i] + 10;
+      final x1 = x + radius * math.cos(angle);
+      final y1 = y - radius * math.sin(angle);
+      canvas.drawLine(
+          Offset(size.width / 2, size.height / 2),
+          Offset(x1, y1),
+          Paint()
+            ..color = Colors.white
+            ..strokeWidth = 2
+            ..style = PaintingStyle.stroke);
     }
 
     canvas.drawCircle(
